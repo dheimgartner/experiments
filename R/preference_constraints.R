@@ -22,6 +22,8 @@ preference_constraints <- function(full_factorial, sub = 999) {
 
   df <- full_factorial[!condition, ]
 
+
+
   ## if mt_available == 0 set other mt attrs to sub
   mt_not_available <- function(df, mt) {
     avail <- paste(mt, "available", sep = "_")
@@ -35,6 +37,8 @@ preference_constraints <- function(full_factorial, sub = 999) {
 
     return(df)
   }
+
+
 
   df <-
     df %>%
