@@ -4,6 +4,8 @@ library(tidyverse)
 
 devtools::load_all()
 
+rm(list = ls())
+
 candidate_set <- experiments::generate_candidate_set()
 
 xlsx::write.xlsx2(candidate_set, file = "./data/candidate_set.xlsx", row.names = FALSE)

@@ -5,12 +5,12 @@
 #' and shutting certain attributes off (e.g. battery capacity if car is not electric).
 #'
 #' @param full_factorial from `generate_candidate_set`
-#' @param sub substitution for not available (defaults to 999)
+#' @param sub substitution for not available (defaults to 0)
 #'
 #' @return reduced factorial `data.frame` with `sub` if availability == 0 or
 #' if attribute should not be shown for another reason (see above).
 #' @export
-preference_constraints <- function(full_factorial, sub = 999) {
+preference_constraints <- function(full_factorial, sub = 0) {
   ## apply constraints
   ## at least one mt has to be available
   condition <- (
