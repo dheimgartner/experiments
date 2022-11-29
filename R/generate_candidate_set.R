@@ -2,11 +2,11 @@
 #'
 #' @seealso ngene user manual
 #'
-#' @param keep random sample to keep (defines nrows of output; defaults to 1e3)
+#' @param keep random sample to keep (defines nrows of output)
 #'
 #' @return ngene candidate set (conforms to examples in ngene user manual)
 #' @export
-generate_candidate_set <- function(keep = 13608) {
+generate_candidate_set <- function(keep = NULL, names = TRUE, ngene = FALSE) {
 
   ## full factorial
   attributes <-
@@ -43,15 +43,23 @@ generate_candidate_set <- function(keep = 13608) {
   A <- reduced[sample(1:nrow(reduced)), ]
   B <- reduced[sample(1:nrow(reduced)), ]
 
-  combined <- cbind(A, B)
+  if (names) {
+    names(A) <- paste0("A_", names(A))
+    names(B) <- paste0("B_", names(B))
+  }
 
-  ## prepare for ngene
-  ngene <- combined[sample(1:keep), ]
+  df <- cbind(A, B)
 
-  tmp <- data.frame(resp = 1, s = 1:nrow(ngene))
+  if (!is.null(keep)) {
+    df <- df[sample(1:keep), ]
+  }
 
-  ngene <- cbind(tmp, ngene)
+  if (ngene) {
+    tmp <- data.frame(resp = 1, s = 1:nrow(df))
 
-  ngene
+    df <- cbind(tmp, df)
+  }
+
+  df
 
 }
