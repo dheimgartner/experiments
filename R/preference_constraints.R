@@ -23,7 +23,6 @@ preference_constraints <- function(full_factorial, sub = 0) {
   df <- full_factorial[!condition, ]
 
 
-
   ## if mt_available == 0 set other mt attrs to sub
   mt_not_available <- function(df, mt) {
     avail <- paste(mt, "available", sep = "_")
@@ -32,8 +31,7 @@ preference_constraints <- function(full_factorial, sub = 0) {
       dplyr::mutate(dplyr::across(
         tidyselect::starts_with(mt) & !dplyr::contains("available"),
         ~ ifelse(.data[[avail]] == 0, sub, .x)
-      )) %>%
-      dplyr::distinct()
+      ))
 
     return(df)
   }
@@ -51,8 +49,7 @@ preference_constraints <- function(full_factorial, sub = 0) {
   ## if ca_fuel != "electric" (2) then ca_reach == sub
   df <-
     df %>%
-    dplyr::mutate(ca_reach = ifelse(ca_fuel != 2, sub, ca_reach)) %>%
-    dplyr::distinct()
+    dplyr::mutate(ca_reach = ifelse(ca_fuel != 2, sub, ca_reach))
 
 
   ## if pt_type != "modulabo" (2) then pt_zones == sub & pt_commute == sub
@@ -61,8 +58,7 @@ preference_constraints <- function(full_factorial, sub = 0) {
     dplyr::mutate(
       pt_zones = ifelse(pt_type != 2, sub, pt_zones),
       pt_commute = ifelse(pt_type != 2, sub, pt_commute)
-    ) %>%
-    dplyr::distinct()
+    )
 
 
   ## if pt_type != "halbtax" (1) then pt_variable_cost == sub
@@ -70,16 +66,14 @@ preference_constraints <- function(full_factorial, sub = 0) {
     df %>%
     dplyr::mutate(
       pt_variable_cost = ifelse(pt_type != 1, sub, pt_variable_cost)
-    ) %>%
-    dplyr::distinct()
+    )
 
 
   ## set available == 0 to sub
   df <-
     df %>%
     dplyr::mutate(dplyr::across(tidyselect::contains("available"),
-                                ~ ifelse(.x == 0, sub, .x))) %>%
-    dplyr::distinct()
+                                ~ ifelse(.x == 0, sub, .x)))
 
   return(df)
 }
