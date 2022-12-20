@@ -12,7 +12,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
 Imports: 
     dplyr,
+    glue,
     magrittr,
+    reticulate,
     stringr,
     tidyselect
 Depends: 

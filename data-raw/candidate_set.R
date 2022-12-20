@@ -6,7 +6,7 @@ devtools::load_all()
 
 rm(list = ls())
 
-candidate_set <- experiments::generate_candidate_set()
+candidate_set <- experiments::generate_candidate_set(keep = 1000, ngene = TRUE, names = FALSE)
 
 xlsx::write.xlsx2(candidate_set, file = "./data/candidate_set.xlsx", row.names = FALSE)
 
