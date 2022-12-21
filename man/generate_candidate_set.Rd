@@ -8,6 +8,11 @@ generate_candidate_set(keep = NULL, names = TRUE, ngene = FALSE)
 }
 \arguments{
 \item{keep}{random sample to keep (defines nrows of output)}
+
+\item{names}{should "A_" and "B_" prefix be added for bundles (defaults to \code{TRUE}).}
+
+\item{ngene}{The ngene user manual suggests, that the candidature set does not
+have these prefixes, but repeated col names for the bundles (defaults to \code{FALSE}).}
 }
 \value{
 ngene candidate set (conforms to examples in ngene user manual)

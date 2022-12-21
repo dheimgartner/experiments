@@ -14,6 +14,7 @@ Imports:
     assertthat,
     dplyr,
     glue,
+    labelr,
     magrittr,
     reticulate,
     stringr,
