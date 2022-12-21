@@ -17,7 +17,7 @@
 if (F) {
   sub_codes_(design, "A_eb_motor", "A_eb_type", c(1, 2), c(250, 350))
 }
-sub_codes_ <- function(df, target, conditional, compare, substitution) {
+sub_codes_ <- function(df, target, conditional, compare, substitution, NA_replace = 0) {
   d <- df[[conditional]]
   t <- df[[target]]
 
@@ -30,7 +30,7 @@ sub_codes_ <- function(df, target, conditional, compare, substitution) {
         flag <- (x == compare)
       }
       if(sum(flag) == 0) {
-        return(NA)
+        return(NA_replace)
       }
       ref <- substitution[flag]
       new <- ref * as.numeric(as.character(y))  ## factor...
@@ -78,13 +78,13 @@ sub_codes <- function(df, target, conditional, compare, substitution, leader = c
 #' Should be called after `labelr::label_df` has been applied
 #'
 #' @param df labeled design
-#' @param archetypes see data-raw (generated with help of `tcsscraper`)
+#' @param archetypes see `generate_generic_archetypes` and `gen_archs`
 #'
-#' @seealso `tcsscraper` python package (in particular jupyter notebook)
+#' @seealso `tcsscraper` python package (in particular sub-package `experiments`)
 #'
 #' @return
 #' @export
-replace_codes_from_archetypes <- function(df, archetypes) {
+sub_codes_from_archs <- function(df, archetypes) {
 
   ## select variables of interest
   dfc <-
@@ -187,13 +187,26 @@ add_units <- function(df) {
 #' @export
 replace_effect_codes <- function(design, add_units = TRUE) {
 
-  ##### TODO: tick #####
-  ## conditional substitution with sub_codes
+  labelr::labels$set(experiments::labels)
+
   design <-
     design %>%
-    sub_codes_x("eb_motor", "eb_type", c("up to 25 km/h", "up to 45 km/h"), c(250, 350)) %>%
-    sub_codes_x("eb_battery", "eb_type", c("up to 25 km/h", "up to 45 km/h"), c(500, 800)) %>%
-    sub_codes_x("eb_cost", "eb_type", c("up to 25 km/h", "up to 45 km/h"), c(50, 80))
+    labelr::label_df()
+
+  ## conditional substitution
+
+
+
+
+  # TODO: cs stuff
+
+
+
+
+
+  design <-
+    design %>%
+    sub_codes("eb_cost", "eb_type", c("up to 25 km/h", "up to 45 km/h"), c(50, 80))
 
   ## price of modulabo depends on zones included
   design <-
@@ -203,7 +216,7 @@ replace_effect_codes <- function(design, add_units = TRUE) {
 
   design <-
     design %>%
-    sub_codes_x("pt_fix_cost", "ma", c("GA", "HT", "Modulabo_1-2 Zones", "Modulabo_2-5 Zones"), c(300, 15, 65, 185))
+    sub_codes("pt_fix_cost", "ma", c("GA", "HT", "Modulabo_1-2 zones", "Modulabo_2-5 zones"), c(300, 15, 65, 185))
 
   design <-
     design %>%
@@ -212,25 +225,25 @@ replace_effect_codes <- function(design, add_units = TRUE) {
   ## VC of HT
   design <-
     design %>%
-    sub_codes_x("pt_variable_cost", "pt_type", c("GA", "HT", "Modulabo"), c(NA, 0.5, NA))
-  ##### TODO: tock #####
-
-  ## main labelling
-  labelr::labels$set(experiments::labels)
-
-  design <- labelr::label_df(design)
+    sub_codes("pt_variable_cost", "pt_type", c("GA", "HT", "Modulabo"), c(0, 0.5, 0))
 
   ## cast to character
   design <-
     design %>%
     dplyr::mutate(across(everything(), as.character))
 
+
+
+
+
+
+
   archetypes <-
     experiments::generic_archetypes %>%
     dplyr::rename(ca_type = vehicle_class, ca_fuel = fuel_type, fc = fix_cost,
                   cpkm = cost_per_km)
 
-  design <- replace_codes_from_archetypes(df = design, archetypes = archetypes)
+  design <- sub_codes_from_archs(df = design, archetypes = archetypes)
 
   if(add_units) {
     design <-
