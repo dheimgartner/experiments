@@ -3,6 +3,9 @@
 #' @seealso ngene user manual
 #'
 #' @param keep random sample to keep (defines nrows of output)
+#' @param names should "A_" and "B_" prefix be added for bundles (defaults to `TRUE`).
+#' @param ngene The ngene user manual suggests, that the candidature set does not
+#' have these prefixes, but repeated col names for the bundles (defaults to `FALSE`).
 #'
 #' @return ngene candidate set (conforms to examples in ngene user manual)
 #' @export
@@ -12,9 +15,9 @@ generate_candidate_set <- function(keep = NULL, names = TRUE, ngene = FALSE) {
   attributes <-
     list(
       ca_available = c(1, 0),
-      ca_type = c(1, 2, 3, 4, 5, 6),
-      ca_fuel = c(1, 2, 3, 4),
-      ca_reach = c(1, 2),
+      ca_type = c(1, 2, 3, 4, 5),
+      ca_fuel = c(1, 2, 3, 4, 5),
+      ca_reach = c(1, 2, 3),
       ca_fix_cost = c(1, 2),
       ca_variable_cost = c(1, 2),
       cs_available = c(1, 0),
@@ -28,7 +31,7 @@ generate_candidate_set <- function(keep = NULL, names = TRUE, ngene = FALSE) {
       pt_available = c(1, 0),
       pt_type = c(1, 2, 3),
       pt_zones = c(1, 2),
-      pt_commute = c(1, 2),
+      pt_commute = c(1, 2),  ## included not included (0 is reserved for not showing)
       pt_fix_cost = c(1, 2),
       pt_variable_cost = c(1, 2)
     )
