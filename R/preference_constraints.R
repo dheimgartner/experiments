@@ -46,26 +46,26 @@ preference_constraints <- function(full_factorial, sub = 0) {
     mt_not_available("pt")
 
 
-  ## if ca_fuel != "electric" (2) then ca_reach == sub
+  ## if ca_fuel != "electric" (3) then ca_reach == sub
   df <-
     df %>%
-    dplyr::mutate(ca_reach = ifelse(ca_fuel != 2, sub, ca_reach))
+    dplyr::mutate(ca_reach = ifelse(ca_fuel != 3, sub, ca_reach))
 
 
-  ## if pt_type != "modulabo" (2) then pt_zones == sub & pt_commute == sub
+  ## if pt_type != "modulabo" (3) then pt_zones == sub & pt_commute == sub
   df <-
     df %>%
     dplyr::mutate(
-      pt_zones = ifelse(pt_type != 2, sub, pt_zones),
-      pt_commute = ifelse(pt_type != 2, sub, pt_commute)
+      pt_zones = ifelse(pt_type != 3, sub, pt_zones),
+      pt_commute = ifelse(pt_type != 3, sub, pt_commute)
     )
 
 
-  ## if pt_type != "halbtax" (1) then pt_variable_cost == sub
+  ## if pt_type != "halbtax" (2) then pt_variable_cost == sub
   df <-
     df %>%
     dplyr::mutate(
-      pt_variable_cost = ifelse(pt_type != 1, sub, pt_variable_cost)
+      pt_variable_cost = ifelse(pt_type != 2, sub, pt_variable_cost)
     )
 
 
