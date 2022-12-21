@@ -5,7 +5,7 @@ devtools::load_all()
 ## nTrials == number of total unique choice tasks
 ## nTrials / 8 == number of blocks
 
-b <- generate_candidate_set(keep = 1000)
+b <- experiments::candidate_set
 b <- dplyr::distinct(b)
 design <- generate_design(b, nTrials = 240)
 
