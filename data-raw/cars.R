@@ -10,4 +10,14 @@ cars <-
                                            km = 13500,
                                            path_save = "./tmp/cars")
 
+df <- tibblify::tibblify(purrr::flatten(cars))
+
+## ""
+df <- df[df$specs$Fahrzeugklasse != "", ]
+
+cars <- list()
+
+cars$list <- cars
+cars$df <- df
+
 usethis::use_data(cars, overwrite = TRUE)
