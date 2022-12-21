@@ -28,16 +28,24 @@ generate_generic_archetypes <- function(return_cars = TRUE, ...) {
 # 2. prep labels and proceed with replace effect codes
 # 3. also adjust gen_archs to consider remapping
 
-gen_archs <- function(cars) {
+gen_archs <- function(cars, no_aggr = FALSE, label = TRUE) {
 
   ru <- reticulate::import("tcsscraper.experiments.generate_generic_archetypes")
   remove_unit <- ru$remove_unit
 
-  df <- tibblify::tibblify(purrr::flatten(cars))
   df <-
-    df %>%
+    cars %>%
     dplyr::mutate(vehicle_type = specs$Fahrzeugklasse,
                   fuel_type = specs$Treibstoffart)
+
+  if (label) {
+    labelr::labels$set(experiments::labels)
+
+    df <-
+      df %>%
+      labelr::label_df() %>%
+      mutate(dplyr::across(tidyselect::where(is.factor), as.character))
+  }
 
   df <-
     df %>%
@@ -62,7 +70,12 @@ gen_archs <- function(cars) {
            reach =
              map(reach,
                  ~ as.numeric(.x[2])) %>%
-             unlist())
+             unlist()) %>%
+    tidyr::drop_na(vehicle_type, fuel_type)
+
+  if (no_aggr) {
+    return(df)
+  }
 
   df <-
     df %>%
@@ -75,7 +88,7 @@ gen_archs <- function(cars) {
     filter(vehicle_type != "",
            !is.na(vehicle_type))
 
-  df
+  return(df)
 
 }
 
