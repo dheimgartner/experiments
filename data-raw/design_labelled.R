@@ -14,9 +14,9 @@ df <-
 df <-
   df %>%
   group_by(block) %>%
-  mutate(id = dplyr::row_number()) %>%
+  mutate(cs = dplyr::row_number()) %>%
   ungroup() %>%
-  select(block, id, everything())
+  select(block, cs, everything())
 
 df <-
   df %>%
