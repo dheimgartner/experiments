@@ -30,6 +30,7 @@ generate_candidate_set <- function(keep = NULL, names = TRUE, ngene = FALSE) {
       eb_cost = c(1, 2),
       pt_available = c(1, 0),
       pt_type = c(1, 2, 3),
+      pt_class = c(1, 2),
       pt_zones = c(1, 2),
       pt_commute = c(1, 2),  ## included not included (0 is reserved for not showing)
       pt_fix_cost = c(1, 2),
