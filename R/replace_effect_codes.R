@@ -226,7 +226,7 @@ replace_effect_codes <- function(design, add_units = TRUE) {
 
   design <-
     design %>%
-    sub_codes("pt_fix_cost", "ma", c("GA", "HT", "Modulabo_1-2 zones", "Modulabo_2-5 zones"), c(300, 15, 65, 185))
+    sub_codes("pt_fix_cost", "ma", c("GA", "HT", "Modulabo_1-2 zones", "Modulabo_Whole fare network"), c(300, 15, 65, 185))
 
   design <-
     design %>%
