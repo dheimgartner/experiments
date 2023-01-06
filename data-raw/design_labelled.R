@@ -13,6 +13,10 @@ df <-
 
 df <-
   df %>%
+  experiments::first_class_multiplier(multiplier = 1.7)
+
+df <-
+  df %>%
   group_by(block) %>%
   mutate(cs = dplyr::row_number()) %>%
   ungroup() %>%
