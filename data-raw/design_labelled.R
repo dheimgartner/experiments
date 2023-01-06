@@ -22,6 +22,8 @@ df <-
   df %>%
   select(-contains("_available"))
 
+write.table(df, "./data/design_labelled.csv", sep = ";", row.names = FALSE)
+
 json <- jsonlite::toJSON(df, na = "string", pretty = TRUE)
 
 jsonlite::write_json(json, "./data/design_labelled.json")
