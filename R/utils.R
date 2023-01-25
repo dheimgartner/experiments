@@ -75,3 +75,11 @@ manipulate_with_unit <- function(x, func, ...) {
     nu$numbers <- func(nu$numbers, ...)
     experiments::paste_unit_number(nu)
 }
+
+
+
+translate_from_to <- function(design, from = c("de", "en"), to = c("de", "en")) {
+    labelr::labels_set(experiments::labels)
+    to_label <- names(design) %in% names(labelr::labels$get())
+    purrr::map
+}
