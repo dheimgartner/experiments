@@ -5,26 +5,74 @@ library(jsonlite)
 
 devtools::load_all()
 
+rm(list = ls())
+
+
+
 design_labelled <- list()
 
 df <-
-  experiments::replace_effect_codes(experiments::design$final,
-                                    add_units = TRUE)
+    experiments::replace_effect_codes(experiments::design$final,
+        add_units = TRUE
+    )
+
+to_multi <-
+    c(
+        "A_pt_fix_cost",
+        "A_pt_variable_cost",
+        "B_pt_fix_cost",
+        "B_pt_variable_cost"
+    )
 
 df <-
-  df %>%
-  experiments::first_class_multiplier(multiplier = 1.7)
+    df %>%
+    mutate(
+        across(
+            all_of(to_multi),
+            function(x) experiments::first_class_multiplier(x, multiplier = 1.7),
+            .names = "{.col}_m"
+        ),
+        # No first class half fare fix cost
+        A_pt_fix_cost =
+            ifelse(A_pt_class == "first" & A_pt_type != "HT",
+                A_pt_fix_cost_m,
+                A_pt_fix_cost
+            ),
+        B_pt_fix_cost =
+            ifelse(B_pt_class == "first" & B_pt_type != "HT",
+                B_pt_fix_cost_m,
+                B_pt_fix_cost
+            ),
+        # Variable cost only for HT
+        A_pt_variable_cost =
+            ifelse(A_pt_class == "first" & A_pt_type == "HT",
+                A_pt_variable_cost_m,
+                A_pt_variable_cost
+            ),
+        B_pt_variable_cost =
+            ifelse(B_pt_class == "first" & B_pt_type == "HT",
+                B_pt_variable_cost_m,
+                B_pt_variable_cost
+            )
+    ) %>%
+    select(!ends_with("_m"))
 
 df <-
-  df %>%
-  group_by(block) %>%
-  mutate(cs = dplyr::row_number()) %>%
-  ungroup() %>%
-  select(block, cs, everything())
+    df %>%
+    mutate(across(contains("_pt_fix_cost"), function(x) {
+        manipulate_with_unit(x, round, digits = 0)
+    }))
 
 df <-
-  df %>%
-  select(-contains("_available"))
+    df %>%
+    group_by(block) %>%
+    mutate(cs = dplyr::row_number()) %>%
+    ungroup() %>%
+    select(block, cs, everything())
+
+df <-
+    df %>%
+    select(-contains("_available"))
 
 write.table(df, "./data/design_labelled.csv", sep = ";", row.names = FALSE)
 
