@@ -15,31 +15,30 @@
 #'
 #' @examples
 if (F) {
-  sub_codes_(design, "A_eb_motor", "A_eb_type", c(1, 2), c(250, 350))
+    sub_codes_(design, "A_eb_motor", "A_eb_type", c(1, 2), c(250, 350))
 }
 sub_codes_ <- function(df, target, conditional, compare, substitution, NA_replace = NA) {
-  d <- df[[conditional]]
-  t <- df[[target]]
+    d <- df[[conditional]]
+    t <- df[[target]]
 
-  sub <-
-    purrr::map2(d, t, function(x, y) {
+    sub <-
+        purrr::map2(d, t, function(x, y) {
+            if (is.na(as.character(x))) {
+                flag <- 0
+            } else {
+                flag <- (x == compare)
+            }
+            if (sum(flag) == 0) {
+                return(NA_replace)
+            }
+            ref <- substitution[flag]
+            new <- ref * as.numeric(as.character(y)) ## factor...
 
-      if(is.na(as.character(x))) {
-        flag <- 0
-      } else {
-        flag <- (x == compare)
-      }
-      if(sum(flag) == 0) {
-        return(NA_replace)
-      }
-      ref <- substitution[flag]
-      new <- ref * as.numeric(as.character(y))  ## factor...
+            return(new)
+        })
 
-      return(new)
-    })
-
-  df[target] <- unlist(sub)
-  return(df)
+    df[target] <- unlist(sub)
+    return(df)
 }
 
 
@@ -56,19 +55,19 @@ sub_codes_ <- function(df, target, conditional, compare, substitution, NA_replac
 #'
 #' @examples
 if (F) {
-  sub_codes(design, "eb_motor", "eb_type", c(1, 2), c(250, 350))
+    sub_codes(design, "eb_motor", "eb_type", c(1, 2), c(250, 350))
 }
 sub_codes <- function(df, target, conditional, compare, substitution, leader = c("A_", "B_")) {
-  dfs <-
-    purrr::map(leader, function(x) {
-      tar <- paste0(x, target)
-      dec <- paste0(x, conditional)
-      df <-
-        df %>%
-        sub_codes_(tar, dec, compare, substitution)
-      out <- df %>% dplyr::select(tidyselect::starts_with(x))
-    })
-  df <- purrr::reduce(dfs, cbind)
+    dfs <-
+        purrr::map(leader, function(x) {
+            tar <- paste0(x, target)
+            dec <- paste0(x, conditional)
+            df <-
+                df %>%
+                sub_codes_(tar, dec, compare, substitution)
+            out <- df %>% dplyr::select(tidyselect::starts_with(x))
+        })
+    df <- purrr::reduce(dfs, cbind)
 }
 
 
@@ -85,112 +84,70 @@ sub_codes <- function(df, target, conditional, compare, substitution, leader = c
 #' @return
 #' @export
 sub_codes_from_archs <- function(df, archetypes) {
+    ## select variables of interest
+    dfc <-
+        df %>%
+        dplyr::select(contains("ca")) %>%
+        dplyr::mutate(across(everything(), as.character),
+            id = 1:nrow(.)
+        ) %>%
+        tidyr::pivot_longer(-id) %>%
+        dplyr::mutate(
+            bundle = substring(name, first = 1, last = 1),
+            name = sub(pattern = "^[A-Z]_", replacement = "", name)
+        ) %>%
+        tidyr::pivot_wider(id_cols = c(id, bundle))
 
-  ## select variables of interest
-  dfc <-
-    df %>%
-    dplyr::select(contains("ca")) %>%
-    dplyr::mutate(across(everything(), as.character),
-                  id = 1:nrow(.)) %>%
-    tidyr::pivot_longer(-id) %>%
-    dplyr::mutate(bundle = substring(name, first = 1, last = 1),
-                  name = sub(pattern = "^[A-Z]_", replacement = "", name)) %>%
-    tidyr::pivot_wider(id_cols = c(id, bundle))
+    tmp_label <- list(experiments::labels$A_ca_type, experiments::labels$A_ca_fuel)
+    names(tmp_label) <- c("ca_type", "ca_fuel")
 
-  tmp_label <- list(experiments::labels$A_ca_type, experiments::labels$A_ca_fuel)
-  names(tmp_label) <- c("ca_type", "ca_fuel")
+    labelr::labels$set(tmp_label)
 
-  labelr::labels$set(tmp_label)
+    dfc$ca_type <- labelr::label_var(dfc$ca_type, variable = "ca_type", filter = "archs")
+    dfc$ca_fuel <- labelr::label_var(dfc$ca_fuel, variable = "ca_fuel", filter = "archs")
 
-  dfc$ca_type <- labelr::label_var(dfc$ca_type, variable = "ca_type", filter = "archs")
-  dfc$ca_fuel <- labelr::label_var(dfc$ca_fuel, variable = "ca_fuel", filter = "archs")
+    dfc <-
+        dfc %>%
+        dplyr::left_join(archetypes, by = c("ca_type", "ca_fuel")) %>%
+        dplyr::mutate(
+            across(
+                c("ca_fix_cost", "ca_variable_cost", "ca_reach"),
+                as.numeric
+            ),
+            ca_fix_cost = round(ca_fix_cost * fc / 12, digits = 0), # monthly
+            ca_variable_cost = round(ca_variable_cost * cpkm, digits = 2),
+            ca_reach = round(ca_reach * reach, digits = 0)
+        ) %>%
+        dplyr::select(-c(fc, cpkm, reach)) %>%
+        dplyr::mutate(across(everything(), as.character)) %>%
+        tidyr::pivot_longer(-c(id, bundle)) %>%
+        dplyr::mutate(name = paste(bundle, name, sep = "_")) %>%
+        dplyr::select(-bundle) %>%
+        tidyr::pivot_wider(id_cols = id)
 
-  dfc <-
-    dfc %>%
-    dplyr::left_join(archetypes, by = c("ca_type", "ca_fuel")) %>%
-    dplyr::mutate(across(c("ca_fix_cost", "ca_variable_cost", "ca_reach"),
-                         as.numeric),
-                  ca_fix_cost = round(ca_fix_cost * fc / 12, digits = 0),  # monthly
-                  ca_variable_cost = round(ca_variable_cost * cpkm, digits = 2),
-                  ca_reach = round(ca_reach * reach, digits = 0)) %>%
-    dplyr::select(-c(fc, cpkm, reach)) %>%
-    dplyr::mutate(across(everything(), as.character)) %>%
-    tidyr::pivot_longer(-c(id, bundle)) %>%
-    dplyr::mutate(name = paste(bundle, name, sep = "_")) %>%
-    dplyr::select(-bundle) %>%
-    tidyr::pivot_wider(id_cols = id)
+    nm <- names(dfc[, !(names(dfc) %in% "id")])
+    df <-
+        df %>%
+        dplyr::select(-tidyselect::all_of(nm)) %>%
+        cbind(dfc)
 
-  nm <- names(dfc[, !(names(dfc) %in% "id")])
-  df <-
-    df %>%
-    dplyr::select(-tidyselect::all_of(nm)) %>%
-    cbind(dfc)
+    ## order cols
+    nm <- sort(names(df))
+    df <-
+        df %>%
+        dplyr::select(all_of(nm), -id) %>%
+        dplyr::select(block, everything())
 
-  ## order cols
-  nm <- sort(names(df))
-  df <-
-    df %>%
-    dplyr::select(all_of(nm), -id) %>%
-    dplyr::select(block, everything())
+    revert_label <- function(df, variable, filter = "revert") {
+        labelr::label_var(df[[variable]], variable = variable, filter = filter)
+    }
 
-  revert_label <- function(df, variable, filter = "revert") {
-    labelr::label_var(df[[variable]], variable = variable, filter = filter)
-  }
+    df$A_ca_type <- revert_label(df, "A_ca_type")
+    df$B_ca_type <- revert_label(df, "B_ca_type")
+    df$A_ca_fuel <- revert_label(df, "A_ca_fuel")
+    df$B_ca_fuel <- revert_label(df, "B_ca_fuel")
 
-  df$A_ca_type <- revert_label(df, "A_ca_type")
-  df$B_ca_type <- revert_label(df, "B_ca_type")
-  df$A_ca_fuel <- revert_label(df, "A_ca_fuel")
-  df$B_ca_fuel <- revert_label(df, "B_ca_fuel")
-
-  df
-}
-
-
-
-#' Adds units from labels
-#'
-#' `labelr::labels$set needs to be called first` such that the function can
-#' retrieve the values. Adding the units is most likely the last step!
-#'
-#' @param df
-#'
-#' @return
-#' @export
-#'
-#' @examples
-add_units <- function(df) {
-  units <-
-    labelr::labels$get() %>%
-    purrr::map2(.x = ., .y = names(.), function(l, n) {
-      flag_unit <- "unit" %in% names(l)
-      flag_filter <- "filter" %in% names(l)
-      l[, "key"] <- n
-      if (!flag_unit) l$unit <- ""
-      if (!flag_filter) l$filter <- "long"
-      l
-    }) %>%
-    purrr::reduce(rbind) %>%
-    tidyr::drop_na() %>%
-    dplyr::select(key, unit) %>%
-    dplyr::distinct()
-
-  nm <- names(df)
-
-  all_cols <-
-    purrr::map(nm, function(x) {
-      flag <- x %in% units$key
-      col <- df[[x]]
-      if(flag) {
-        unit <- units[units$key == x, ][["unit"]]
-        col <- stringr::str_c(col, unit, sep = " ")  ## paste does not remove NA
-      }
-      col
-    })
-
-  names(all_cols) <- nm
-
-  df <- as.data.frame(all_cols)
-  df
+    df
 }
 
 
@@ -205,61 +162,63 @@ add_units <- function(df) {
 #' @return
 #' @export
 replace_effect_codes <- function(design, add_units = TRUE) {
+    block <- design$block # gets lost in sub_codes
 
-  block <- design$block  # gets lost in sub_codes
-
-  labelr::labels$set(experiments::labels)
-
-  design <-
-    design %>%
-    labelr::label_df()
-
-  design <-
-    design %>%
-    sub_codes("eb_cost", "eb_type", c("Up to 25 km/h", "Up to 45 km/h"), c(50, 80))
-
-  ## price of modulabo depends on zones included
-  design <-
-    design %>%
-    dplyr::mutate(A_ma = ifelse(A_pt_type == "Modulabo", paste(A_pt_type, A_pt_zones, sep = "_"), as.character(A_pt_type)),
-                  B_ma = ifelse(B_pt_type == "Modulabo", paste(B_pt_type, B_pt_zones, sep = "_"), as.character(B_pt_type)))
-
-  design <-
-    design %>%
-    sub_codes("pt_fix_cost", "ma", c("GA", "HT", "Modulabo_1-2 zones", "Modulabo_Whole fare network"), c(300, 15, 65, 185))
-
-  design <-
-    design %>%
-    dplyr::select(-c(A_ma, B_ma))
-
-  design <-
-    design %>%
-    sub_codes("pt_variable_cost", "pt_type", c("GA", "HT", "Modulabo"), c(NA_real_, 0.5, NA_real_))
-
-  ## cast to character
-  design <-
-    design %>%
-    dplyr::mutate(across(everything(), as.character))
-
-  design$block <- block  # add again
-
-  archetypes <-
-    experiments::generic_archetypes %>%
-    dplyr::rename(ca_type = vehicle_type, ca_fuel = fuel_type, fc = fix_cost,
-                  cpkm = cost_per_km)
-
-  design <- sub_codes_from_archs(df = design, archetypes = archetypes)
-
-  if(add_units) {
-    design <-
-      design %>%
-      add_units()
+    labelr::labels$set(experiments::labels)
 
     design <-
-      design %>%
-      mutate(across(where(is.character), trimws))
-  }
+        design %>%
+        labelr::label_df()
 
-  design
+    design <-
+        design %>%
+        sub_codes("eb_cost", "eb_type", c("Up to 25 km/h", "Up to 45 km/h"), c(50, 80))
 
+    ## price of modulabo depends on zones included
+    design <-
+        design %>%
+        dplyr::mutate(
+            A_ma = ifelse(A_pt_type == "Modulabo", paste(A_pt_type, A_pt_zones, sep = "_"), as.character(A_pt_type)),
+            B_ma = ifelse(B_pt_type == "Modulabo", paste(B_pt_type, B_pt_zones, sep = "_"), as.character(B_pt_type))
+        )
+
+    design <-
+        design %>%
+        sub_codes("pt_fix_cost", "ma", c("GA", "HT", "Modulabo_1-2 zones", "Modulabo_Whole fare network"), c(300, 15, 65, 185))
+
+    design <-
+        design %>%
+        dplyr::select(-c(A_ma, B_ma))
+
+    design <-
+        design %>%
+        sub_codes("pt_variable_cost", "pt_type", c("GA", "HT", "Modulabo"), c(NA_real_, 0.5, NA_real_))
+
+    ## cast to character
+    design <-
+        design %>%
+        dplyr::mutate(across(everything(), as.character))
+
+    design$block <- block # add again
+
+    archetypes <-
+        experiments::generic_archetypes %>%
+        dplyr::rename(
+            ca_type = vehicle_type, ca_fuel = fuel_type, fc = fix_cost,
+            cpkm = cost_per_km
+        )
+
+    design <- sub_codes_from_archs(df = design, archetypes = archetypes)
+
+    if (add_units) {
+        design <-
+            design %>%
+            add_units()
+
+        design <-
+            design %>%
+            mutate(across(where(is.character), trimws))
+    }
+
+    design
 }

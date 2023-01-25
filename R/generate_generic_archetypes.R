@@ -7,16 +7,14 @@ generate_generic_archetypes <- function(return_cars = TRUE, ...) {
 
 
 
-# TODO:
-# 1. check mail thomas
-# -----
+
 # => vehicle_type (5):
 # Small car (e.g. Fiat 500 or Volkswagen Polo)
 # Medium to large car (e.g. Skoda Octavia or BMW 3 Series)
 # SUV (e.g. BMW X3 or Volkswagen Tiguan)
 # Minivan or van (e.g. Volkswagen T6)
 # Luxury car or sports coupé (e.g. Mercedes-Benz E-Class, BMW 7 Series or Porsche 911)
-# -----
+#
 # => fuel_type (5):
 # Gasoline
 # Diesel
@@ -24,10 +22,6 @@ generate_generic_archetypes <- function(return_cars = TRUE, ...) {
 # Plug-in hybrid (gasoline/diesel + electric)
 # Electric
 # (Other)
-# -----
-# 2. prep labels and proceed with replace effect codes
-# 3. also adjust gen_archs to consider remapping
-
 gen_archs <- function(cars, no_aggr = FALSE, label = TRUE) {
 
   ru <- reticulate::import("tcsscraper.experiments.generate_generic_archetypes")
