@@ -78,8 +78,14 @@ manipulate_with_unit <- function(x, func, ...) {
 
 
 
-translate_from_to <- function(design, from = c("de", "en"), to = c("de", "en")) {
-    labelr::labels_set(experiments::labels)
-    to_label <- names(design) %in% names(labelr::labels$get())
-    purrr::map
+set_labels <- function(lang = c("en", "de")) {
+  lang <- match.arg(lang)
+  if (lang == "de") {
+    labelr::labels$set(experiments::labels_de)
+  } else if (lang == "en") {
+    labelr::labels$set(experiments::labels_en)
+  } else {
+    # redundant
+    stop(glue::glue("Language {lang} not implemented."))
+  }
 }

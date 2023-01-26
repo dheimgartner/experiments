@@ -83,7 +83,8 @@ sub_codes <- function(df, target, conditional, compare, substitution, leader = c
 #'
 #' @return
 #' @export
-sub_codes_from_archs <- function(df, archetypes) {
+sub_codes_from_archs <- function(df, archetypes, lang = c("en", "de")) {
+    lang <- match.arg(lang)
     ## select variables of interest
     dfc <-
         df %>%
@@ -98,7 +99,11 @@ sub_codes_from_archs <- function(df, archetypes) {
         ) %>%
         tidyr::pivot_wider(id_cols = c(id, bundle))
 
-    tmp_label <- list(experiments::labels$A_ca_type, experiments::labels$A_ca_fuel)
+    if (lang == "en") {
+        tmp_label <- list(experiments::labels_en$A_ca_type, experiments::labels_en$A_ca_fuel)
+    } else if (lang == "de") {
+        tmp_label <- list(experiments::labels_de$A_ca_type, experiments::labels_de$A_ca_fuel)
+    }
     names(tmp_label) <- c("ca_type", "ca_fuel")
 
     labelr::labels$set(tmp_label)
@@ -161,10 +166,11 @@ sub_codes_from_archs <- function(df, archetypes) {
 #'
 #' @return
 #' @export
-replace_effect_codes <- function(design, add_units = TRUE) {
+replace_effect_codes <- function(design, add_units = TRUE, lang = c("en", "de")) {
+    lang <- match.arg(lang)
     block <- design$block # gets lost in sub_codes
 
-    labelr::labels$set(experiments::labels)
+    set_labels(lang)
 
     design <-
         design %>%
@@ -208,7 +214,7 @@ replace_effect_codes <- function(design, add_units = TRUE) {
             cpkm = cost_per_km
         )
 
-    design <- sub_codes_from_archs(df = design, archetypes = archetypes)
+    design <- sub_codes_from_archs(df = design, archetypes = archetypes, lang = lang)
 
     if (add_units) {
         design <-
