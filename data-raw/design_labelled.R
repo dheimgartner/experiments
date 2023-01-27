@@ -84,9 +84,9 @@ create_choice_cards <- function(lang = c("en", "de")) {
 
 
 df_de <- create_choice_cards("de")
-df_de$lang <- "de"
+df_de$lang <- "DE"
 df_en <- create_choice_cards("en")
-df_en$lang <- "en"
+df_en$lang <- "EN"
 
 df <-
   rbind(df_en, df_de) %>%
