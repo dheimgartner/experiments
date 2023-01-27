@@ -1,3 +1,26 @@
+cost_helper <- function() {
+  a <-
+    full_factorial %>%
+    select(starts_with("A_")) %>%
+    select(contains("_available"), contains("cost"), contains("membership_fee"),
+           contains("time_tariff"), contains("km_tariff"), contains("pt_type"))
+
+  # if ca_available -> both fix_cost and variable_cost must be non-zero
+
+  # if cs_available -> membership_fee, time_tariff and km_tariff must be non-zero
+
+  # if eb_available -> fix_cost must be non-zero
+
+  # if pt_available -> fix_cost must be non-zero
+
+  # if pt_available & pt_type == HT -> variable cost must be non-zero
+}
+
+
+
+
+
+
 #' Apply preference constraints
 #'
 #' Since we use archetypes, we do not really need to apply preference constraints within
