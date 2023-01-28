@@ -17,7 +17,7 @@ generate_candidate_set <- function(keep = NULL, names = TRUE, ngene = FALSE) {
       ca_available = c(1, 0),
       ca_type = c(1, 2, 3, 4, 5),
       ca_fuel = c(1, 2, 3, 4, 5),
-      ca_reach = c(1, 2, 3),
+      ca_reach = c(1, 2),
       ca_fix_cost = c(1, 2),
       ca_variable_cost = c(1, 2),
       cs_available = c(1, 0),
