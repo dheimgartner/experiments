@@ -73,7 +73,7 @@ paste_unit_number <- function(nu) {
 manipulate_with_unit <- function(x, func, ...) {
     nu <- remove_unit(x)
     nu$numbers <- func(nu$numbers, ...)
-    experiments::paste_unit_number(nu)
+    mtosp::paste_unit_number(nu)
 }
 
 
@@ -81,9 +81,9 @@ manipulate_with_unit <- function(x, func, ...) {
 set_labels <- function(lang = c("en", "de")) {
   lang <- match.arg(lang)
   if (lang == "de") {
-    labelr::labels$set(experiments::labels_de)
+    labelr::labels$set(mtosp::labels_de)
   } else if (lang == "en") {
-    labelr::labels$set(experiments::labels_en)
+    labelr::labels$set(mtosp::labels_en)
   } else {
     # redundant
     stop(glue::glue("Language {lang} not implemented."))

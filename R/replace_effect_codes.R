@@ -48,7 +48,7 @@ sub_codes_ <- function(df, target, conditional, compare, substitution, NA_replac
 #' To avoid that sub_bundle_ needs to be spelled out for leaders.
 #' Iterates over leaders and finds appropriate column.
 #'
-#' @seealso `?experiments:::sub_codes_`
+#' @seealso `?mtosp::sub_codes_`
 #'
 #' @return
 #' @export
@@ -100,9 +100,9 @@ sub_codes_from_archs <- function(df, archetypes, lang = c("en", "de")) {
     tidyr::pivot_wider(id_cols = c(id, bundle))
 
   if (lang == "en") {
-    tmp_label <- list(experiments::labels_en$A_ca_type, experiments::labels_en$A_ca_fuel)
+    tmp_label <- list(mtosp::labels_en$A_ca_type, mtosp::labels_en$A_ca_fuel)
   } else if (lang == "de") {
-    tmp_label <- list(experiments::labels_de$A_ca_type, experiments::labels_de$A_ca_fuel)
+    tmp_label <- list(mtosp::labels_de$A_ca_type, mtosp::labels_de$A_ca_fuel)
   }
   names(tmp_label) <- c("ca_type", "ca_fuel")
 
@@ -161,7 +161,7 @@ sub_codes_from_archs <- function(df, archetypes, lang = c("en", "de")) {
 #'
 #' Master function that calls all the helpers
 #'
-#' @param design output from `experiments::generate_design()$final`
+#' @param design output from `mtosp::generate_design()$final`
 #' @param add_units units should be added for choice cards
 #'
 #' @return
@@ -242,7 +242,7 @@ replace_effect_codes <- function(design, add_units = TRUE, lang = c("en", "de"))
   design$block <- block # add again
 
   archetypes <-
-    experiments::generic_archetypes %>%
+    mtosp::generic_archetypes %>%
     dplyr::rename(
       ca_type = vehicle_type, ca_fuel = fuel_type, fc = fix_cost,
       cpkm = cost_per_km

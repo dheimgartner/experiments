@@ -17,7 +17,7 @@ create_choice_cards <- function(lang = c("en", "de")) {
   lang <- match.arg(lang)
 
   df <-
-    experiments::replace_effect_codes(experiments::design$final,
+    mtosp::replace_effect_codes(mtosp::design$final,
                                       add_units = TRUE,
                                       lang = lang
     )
@@ -35,7 +35,7 @@ create_choice_cards <- function(lang = c("en", "de")) {
     mutate(
       across(
         all_of(to_multi),
-        function(x) experiments::first_class_multiplier(x, multiplier = 1.7),
+        function(x) mtosp::first_class_multiplier(x, multiplier = 1.7),
         .names = "{.col}_m"
       ),
       # No first class half fare fix cost

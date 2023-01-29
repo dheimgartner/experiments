@@ -7,7 +7,7 @@ devtools::load_all()
 random_plots <- list()
 
 cost_comparison <-
-  experiments::gen_archs(experiments::cars$df, label = FALSE) %>%
+  mtosp::gen_archs(mtosp::cars$df, label = FALSE) %>%
   mutate(vehicle_type = factor(vehicle_type),
          fuel_type = factor(fuel_type)) %>%
   pivot_longer(cols = c(fix_cost, cost_per_km)) %>%
@@ -29,7 +29,7 @@ random_plots$cost_comparison <- cost_comparison
 
 
 activate_venv()
-df <- experiments::gen_archs(experiments::cars$df, no_aggr = TRUE, label = FALSE)
+df <- mtosp::gen_archs(mtosp::cars$df, no_aggr = TRUE, label = FALSE)
 
 cost_comparison_violin <-
   df %>%

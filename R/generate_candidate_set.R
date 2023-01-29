@@ -41,7 +41,7 @@ generate_candidate_set <- function(keep = NULL, names = TRUE, ngene = FALSE) {
 
   ## preference constraints
   reduced <-
-    experiments::preference_constraints(full, sub = 0)
+    mtosp::preference_constraints(full, sub = 0)
 
   ## candidate bundles
   A <- reduced[sample(1:nrow(reduced)), ]

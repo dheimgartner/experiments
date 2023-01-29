@@ -2,6 +2,6 @@
 
 devtools::load_all()
 
-labels_de <- experiments::prep_labels("de")
+labels_de <- mtosp::prep_labels("de")
 
 usethis::use_data(labels_de, overwrite = TRUE)

@@ -33,7 +33,7 @@ gen_archs <- function(cars, no_aggr = FALSE, label = TRUE) {
                   fuel_type = specs$Treibstoffart)
 
   if (label) {
-    labelr::labels$set(experiments::labels)
+    labelr::labels$set(mtosp::labels)
 
     df <-
       df %>%

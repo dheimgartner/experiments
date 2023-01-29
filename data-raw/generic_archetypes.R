@@ -5,7 +5,7 @@ devtools::load_all()
 activate_venv()
 
 generic_archetypes <-
-  experiments::gen_archs(experiments::cars$df) %>%
+  mtosp::gen_archs(mtosp::cars$df) %>%
   select(-variable_cost)
 
 usethis::use_data(generic_archetypes, overwrite = TRUE)

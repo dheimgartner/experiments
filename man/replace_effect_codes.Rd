@@ -7,7 +7,7 @@
 replace_effect_codes(design, add_units = TRUE, lang = c("en", "de"))
 }
 \arguments{
-\item{design}{output from \code{experiments::generate_design()$final}}
+\item{design}{output from \code{mtosp::generate_design()$final}}
 
 \item{add_units}{units should be added for choice cards}
 }
