@@ -18,8 +18,8 @@ create_choice_cards <- function(lang = c("en", "de")) {
 
   df <-
     mtosp::replace_effect_codes(mtosp::design$final,
-                                      add_units = TRUE,
-                                      lang = lang
+                                add_units = TRUE,
+                                lang = lang
     )
 
   to_multi <-
@@ -91,6 +91,16 @@ df_en$lang <- "EN"
 df <-
   rbind(df_en, df_de) %>%
   select(block, cs, lang, everything())
+
+# To be consistent with more generic pipeline in wfhsp
+df <-
+  df %>%
+  pivot_longer(-c(block, cs, lang)) %>%
+  rename(choice_situation = cs) %>%
+  mutate(alternative = tolower(gsub("_.+", "", name)),
+         name = str_remove_all(name, "^[A-Z]_")) %>%
+  pivot_wider(c(block, choice_situation, lang, alternative)) %>%
+  arrange(block, lang, choice_situation, alternative)
 
 
 
