@@ -75,10 +75,6 @@ create_choice_cards <- function(lang = c("en", "de")) {
     mutate(cs = dplyr::row_number()) %>%
     ungroup() %>%
     select(block, cs, everything())
-
-  df <-
-    df %>%
-    select(-contains("_available"))
 }
 
 
@@ -102,6 +98,9 @@ df <-
   pivot_wider(c(block, choice_situation, lang, alternative)) %>%
   arrange(block, lang, choice_situation, alternative)
 
+df <-
+  df %>%
+  mutate(across(contains("available"), as.numeric))
 
 
 write.table(df, "./data/design_labelled.csv", sep = ";", row.names = FALSE)

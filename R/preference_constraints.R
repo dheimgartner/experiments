@@ -68,6 +68,11 @@ preference_constraints <- function(full_factorial, sub = 0) {
       pt_variable_cost = ifelse(pt_type != 2, sub, pt_variable_cost)
     )
 
+  df <-
+    df %>%
+    dplyr::mutate(
+      pt_class = ifelse(pt_type == 2, sub, pt_class)
+    )
 
   ## set available == 0 to sub
   df <-
