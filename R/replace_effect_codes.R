@@ -202,7 +202,7 @@ replace_effect_codes <- function(design, add_units = TRUE, lang = c("en", "de"))
   lh <-
     labels_helper(lang = lang,
                   labels = list(en = "Regional Season Ticket",
-                                de = "Regionales Sasion-Abonnement"))
+                                de = "Regionalabonnement"))
 
   ## price of modulabo depends on zones included
   design <-
@@ -215,7 +215,7 @@ replace_effect_codes <- function(design, add_units = TRUE, lang = c("en", "de"))
   lh <-
     labels_helper(lang = lang,
                   labels = list(en = c("GA", "Half Fare", "Regional Season Ticket_2 zones", "Regional Season Ticket_Whole fare network"),
-                                de = c("GA", "Halbtax", "Regionales Sasion-Abonnement_2 Zonen", "Regionales Sasion-Abonnement_Ganzer Tarifverbund")))
+                                de = c("GA", "Halbtax", "Regionalabonnement_2 Zonen", "Regionalabonnement_Ganzer Tarifverbund")))
 
   design <-
     design %>%
@@ -228,7 +228,7 @@ replace_effect_codes <- function(design, add_units = TRUE, lang = c("en", "de"))
   lh <-
     labels_helper(lang = lang,
                   labels = list(en = c("GA", "Half Fare", "Regional Season Ticket"),
-                                de = c("GA", "Halbtax", "Regionales Sasion-Abonnement")))
+                                de = c("GA", "Halbtax", "Regionalabonnement")))
 
   design <-
     design %>%
